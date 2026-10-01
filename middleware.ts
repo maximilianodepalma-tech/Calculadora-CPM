@@ -1,24 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ACCESS_COOKIE, parseAccessCodes } from "@/lib/access";
+import { SESSION_COOKIE, accessKey, leerSesion } from "@/lib/session";
 
-export function middleware(req: NextRequest) {
-  const codes = parseAccessCodes(process.env.ACCESS_CODES);
-  if (codes.size === 0) return NextResponse.next(); // acceso libre
+// Si ACCESS_KEY está definida, la calculadora exige clave + registro (pantalla /acceso).
+// Si está vacía, el acceso es libre.
+export async function middleware(req: NextRequest) {
+  if (!accessKey()) return NextResponse.next();
 
   const url = req.nextUrl;
-  const k = url.searchParams.get("k");
-  if (k && codes.has(k)) {
-    const clean = url.clone();
-    clean.searchParams.delete("k");
-    const res = NextResponse.redirect(clean);
-    res.cookies.set(ACCESS_COOKIE, k, {
-      httpOnly: true, secure: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 90,
-    });
-    return res;
-  }
+  if (url.pathname === "/api/acceso") return NextResponse.next();
 
-  const cookie = req.cookies.get(ACCESS_COOKIE)?.value;
-  if (cookie && codes.has(cookie)) return NextResponse.next();
+  const perfil = await leerSesion(req.cookies.get(SESSION_COOKIE)?.value);
+  if (perfil) return NextResponse.next();
 
   if (url.pathname.startsWith("/api/")) {
     return NextResponse.json({ error: "Acceso no autorizado." }, { status: 401 });

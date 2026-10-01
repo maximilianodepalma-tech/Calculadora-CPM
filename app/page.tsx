@@ -18,7 +18,7 @@ export default function Home() {
             Ingresa los datos de venta tradicional de tu pantalla y obtén el CPM en USD que equivale a lo que hoy cobras.
           </p>
         </section>
-        <Calculator countries={COUNTRIES} requireLead={process.env.REQUIRE_LEAD !== "false"} />
+        <Calculator countries={COUNTRIES} requireLead={!process.env.ACCESS_KEY?.trim() && process.env.REQUIRE_LEAD !== "false"} />
       </main>
       <footer className="wrap foot">
         <span>© {new Date().getFullYear()} LatinAd</span>

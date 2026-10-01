@@ -157,6 +157,8 @@ input::placeholder { color: #a8afbf; }
 .gate-logo { display: flex; justify-content: center; padding: 8px 0; margin-bottom: 22px; }
 .gate h1 { font-size: 22px; margin: 0 0 8px; }
 .gate p { color: var(--muted); margin: 0; line-height: 1.5; }
+.gate-form { text-align: left; margin-top: 22px; }
+.gate-form .cta { margin-top: 4px; }
 
 /* Footer */
 .foot { margin-top: auto; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 18px; padding-bottom: 28px; font-size: 12px; color: var(--on-dark-muted); border-top: 1px solid var(--panel-line); }

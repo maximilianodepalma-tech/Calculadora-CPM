@@ -3,7 +3,7 @@ import { calcular } from "@/lib/calc";
 import { getUsdRate } from "@/lib/fx";
 import { COUNTRIES } from "@/lib/countries";
 import { registrarConsulta } from "@/lib/log";
-import { ACCESS_COOKIE, parseAccessCodes } from "@/lib/access";
+import { SESSION_COOKIE, accessKey, leerSesion } from "@/lib/session";
 
 export const runtime = "nodejs";
 
@@ -43,12 +43,17 @@ export async function POST(req: NextRequest) {
   if (!(audiencia > 0)) return bad("Ingresa la audiencia de la pantalla.");
   if (cpmEvaluar != null && !(cpmEvaluar > 0)) return bad("Revisa el CPM a evaluar.");
 
-  // Contacto (lead)
-  const requireLead = process.env.REQUIRE_LEAD !== "false";
+  // Contacto: con ACCESS_KEY, los datos vienen de la sesión (registro en /acceso).
+  // Sin ACCESS_KEY, se usa el formulario de contacto del navegador (REQUIRE_LEAD).
+  const sesion = accessKey() ? await leerSesion(req.cookies.get(SESSION_COOKIE)?.value) : null;
+  if (accessKey() && !sesion) return bad("Acceso no autorizado.", 401);
   const lead = (body.lead ?? {}) as Record<string, unknown>;
-  const nombre = String(lead.nombre ?? "").trim().slice(0, 120);
-  const empresa = String(lead.empresa ?? "").trim().slice(0, 120);
-  const email = String(lead.email ?? "").trim().slice(0, 160);
+  const nombre = sesion?.nombre ?? String(lead.nombre ?? "").trim().slice(0, 120);
+  const empresa = sesion?.empresa ?? String(lead.empresa ?? "").trim().slice(0, 120);
+  const email = sesion?.email ?? String(lead.email ?? "").trim().slice(0, 160);
+  const telefono = sesion?.telefono ?? "";
+  const cargo = sesion?.cargo ?? "";
+  const requireLead = !sesion && process.env.REQUIRE_LEAD !== "false";
   if (requireLead && (!nombre || !empresa || !EMAIL.test(email))) {
     return NextResponse.json({ error: "lead_requerido" }, { status: 428 });
   }
@@ -65,14 +70,13 @@ export async function POST(req: NextRequest) {
     periodoAudiencia, cpmEvaluar, tipoCambio: fx.rate,
   });
 
-  const codes = parseAccessCodes(process.env.ACCESS_CODES);
-  const code = req.cookies.get(ACCESS_COOKIE)?.value;
-  const acceso = code ? codes.get(code) ?? null : null;
+  const acceso = sesion ? "Clave general" : null;
 
   await registrarConsulta({
+    tipo: "consulta",
     fecha: new Date().toISOString(),
     acceso,
-    nombre, empresa, email,
+    nombre, empresa, email, telefono, cargo,
     pais: country.name, moneda: country.currency,
     tarifaLocal, descuento, duracionSpot, anunciantes, horas, audiencia, periodoAudiencia, cpmEvaluar,
     tipoCambio: fx.rate, origenTipoCambio: fx.source,
