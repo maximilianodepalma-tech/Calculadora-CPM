@@ -1,5 +1,7 @@
 "use client";
 
+import { Isotipo } from "@/components/Logo";
+
 import { useEffect, useMemo, useState } from "react";
 import type { Country } from "@/lib/countries";
 
@@ -274,7 +276,7 @@ export default function Calculator({ countries, requireLead }: { countries: Coun
       <section id="resultado" className="results" aria-live="polite">
         {!result ? (
           <div className="empty">
-            <div className="empty-mark" aria-hidden="true" />
+            <div className="empty-mark"><Isotipo size={56} color="#218AE7" /></div>
             <h2>Tu CPM recomendado aparecerá aquí</h2>
             <p>Completa los datos de tu pantalla y presiona “Calcular CPM”.</p>
           </div>

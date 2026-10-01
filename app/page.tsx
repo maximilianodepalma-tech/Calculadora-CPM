@@ -7,7 +7,7 @@ export default function Home() {
     <div className="page">
       <header className="topbar">
         <div className="wrap topbar-inner">
-          <Logo height={26} />
+          <Logo height={26} variant="white" />
           <span className="tag">Herramienta para media owners</span>
         </div>
       </header>
