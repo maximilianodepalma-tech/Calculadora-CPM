@@ -67,7 +67,7 @@ Cada consulta también queda en *Vercel → Logs* (busca `[consulta]`).
 - **Tipos de cambio de respaldo**: en `lib/fx.ts`, la constante `FALLBACK`. Solo se usan si la API diaria no responde.
 - **Países**: en `lib/countries.ts` (nombre y moneda) y en `lib/fx.ts` (respaldo).
 - **Logo**: `components/Logo.tsx` es una versión en SVG + Poppins. Para usar el archivo oficial, deja `logo-latinad.svg` (versión blanca) en `public/` y reemplaza el componente por `<img src="/logo-latinad.svg" alt="LatinAd" height={26} />`.
-- **Modelo de cálculo**: `lib/calc.ts`. `npm test` verifica que coincida con el Excel (ejemplo de Chile: CPM US$6,66 con TC 973,47).
+- **Modelo de cálculo**: `lib/calc.ts`. La audiencia ingresada es el total de la pantalla (todos los slots) y se reparte entre los anunciantes: CPM = tarifa neta USD × anunciantes ÷ audiencia mensual × 1.000. `npm test` verifica el modelo (ejemplo de Chile: CPM US$ 39,95 con TC 973,47).
 
 ## Desarrollo local (opcional)
 

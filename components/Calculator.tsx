@@ -220,7 +220,7 @@ export default function Calculator({ countries, requireLead }: { countries: Coun
         </div>
 
         <div className="field">
-          <label htmlFor="audiencia">Audiencia de la pantalla</label>
+          <label htmlFor="audiencia">Audiencia total de la pantalla</label>
           <div className="aud">
             <input
               id="audiencia"
@@ -244,7 +244,7 @@ export default function Calculator({ countries, requireLead }: { countries: Coun
               ))}
             </div>
           </div>
-          <small>Personas que pasan frente a la pantalla y pueden verla, no las visitas totales del lugar.</small>
+          <small>Total de personas que ven la pantalla en el período, sumando todos los slots. Se reparte entre los anunciantes del loop.</small>
         </div>
 
         <div className="divider" />
@@ -292,7 +292,7 @@ export default function Calculator({ countries, requireLead }: { countries: Coun
               <div className="kpi">
                 <span className="label">Multiplicador</span>
                 <span className="val">{fmt(result.multiplicador, 1)}</span>
-                <span className="sub">personas por spot</span>
+                <span className="sub">personas por spot (audiencia ÷ spots totales)</span>
               </div>
               <div className="kpi">
                 <span className="label">Tarifa en USD</span>
