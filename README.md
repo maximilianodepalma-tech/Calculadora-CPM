@@ -44,7 +44,7 @@ Con `ACCESS_KEY` definida:
 ## 3. Guardar las consultas en una Google Sheet
 
 1. Crea una Google Sheet nueva y escribe en la fila 1:
-   `tipo | fecha | acceso | nombre | empresa | email | telefono | cargo | pais | moneda | tarifaLocal | descuento | duracionSpot | anunciantes | horas | audiencia | periodoAudiencia | cpmEvaluar | tipoCambio | origenTipoCambio | cpmRecomendadoUsd | multiplicador | diferencia`
+   `tipo | fecha | acceso | nombre | empresa | email | telefono | cargo | pais | moneda | tarifaLocal | descuento | duracionSpot | anunciantes | horas | audiencia | periodoAudiencia | tipoAudiencia | cpmEvaluar | tipoCambio | origenTipoCambio | cpmRecomendadoUsd | multiplicador | diferencia`
 2. Menú **Extensiones → Apps Script**, borra lo que haya y pega:
 
 ```js
@@ -67,7 +67,7 @@ Cada consulta también queda en *Vercel → Logs* (busca `[consulta]`).
 - **Tipos de cambio de respaldo**: en `lib/fx.ts`, la constante `FALLBACK`. Solo se usan si la API diaria no responde.
 - **Países**: en `lib/countries.ts` (nombre y moneda) y en `lib/fx.ts` (respaldo).
 - **Logo**: `components/Logo.tsx` es una versión en SVG + Poppins. Para usar el archivo oficial, deja `logo-latinad.svg` (versión blanca) en `public/` y reemplaza el componente por `<img src="/logo-latinad.svg" alt="LatinAd" height={26} />`.
-- **Modelo de cálculo**: `lib/calc.ts`. La audiencia ingresada es el total de la pantalla (todos los slots) y se reparte entre los anunciantes: CPM = tarifa neta USD × anunciantes ÷ audiencia mensual × 1.000. `npm test` verifica el modelo (ejemplo de Chile: CPM US$ 39,95 con TC 973,47).
+- **Modelo de cálculo**: `lib/calc.ts`. El media owner elige el tipo de audiencia: **Total de la pantalla** (se reparte entre los anunciantes: CPM = tarifa neta USD × anunciantes ÷ audiencia mensual × 1.000) o **Por anunciante** (se aplica completa: CPM = tarifa neta USD ÷ audiencia mensual × 1.000). `npm test` verifica ambos casos (ejemplo de Chile: US$ 39,95 y US$ 6,66 con TC 973,47).
 
 ## Desarrollo local (opcional)
 

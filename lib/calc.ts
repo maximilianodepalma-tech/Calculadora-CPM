@@ -9,6 +9,7 @@ export type CalcInput = {
   horas: number;            // horas de funcionamiento al día
   audiencia: number;        // personas que ven la pantalla
   periodoAudiencia: "mensual" | "semanal";
+  tipoAudiencia?: "pantalla" | "anunciante"; // por defecto "pantalla"
   cpmEvaluar?: number | null; // USD, opcional
   tipoCambio: number;       // moneda local por 1 USD
 };
@@ -24,9 +25,11 @@ export type CalcOutput = {
 
 const DIAS_MES = 30;
 
-// Metodología: la audiencia ingresada es el total de la pantalla (todos los slots).
-// Cada anunciante recibe audiencia / anunciantes impresiones al mes, por lo que
-// CPM = tarifa neta USD × anunciantes / audiencia mensual × 1.000.
+// Metodología según el tipo de audiencia que tenga el media owner:
+//  - "pantalla": la audiencia es el total de la pantalla (todos los slots). Se reparte
+//    entre los anunciantes: CPM = tarifa neta USD × anunciantes / audiencia mensual × 1.000.
+//  - "anunciante": la audiencia ya es la que recibe cada anunciante. Se aplica completa:
+//    CPM = tarifa neta USD / audiencia mensual × 1.000.
 
 export function calcular(i: CalcInput): CalcOutput {
   const tarifaUsd = i.tarifaLocal / i.tipoCambio;
@@ -38,9 +41,11 @@ export function calcular(i: CalcInput): CalcOutput {
   // Spots totales que emite la pantalla al mes (todos los slots).
   const spotsTotalesMes = spotsMes * i.anunciantes;
   const audienciaMes = i.periodoAudiencia === "semanal" ? i.audiencia * (DIAS_MES / 7) : i.audiencia;
-  // La audiencia es el total de la pantalla y se reparte entre TODOS los slots:
-  // personas por spot = audiencia mensual / spots totales de la pantalla.
-  const multiplicador = audienciaMes / spotsTotalesMes;
+  // Personas por spot:
+  //  - pantalla: la audiencia se reparte entre TODOS los spots de la pantalla.
+  //  - anunciante: la audiencia se reparte solo entre los spots de ese anunciante.
+  const porAnunciante = i.tipoAudiencia === "anunciante";
+  const multiplicador = audienciaMes / (porAnunciante ? spotsMes : spotsTotalesMes);
   const costoSpotTradicional = tarifaNetaUsd / spotsMes;
   const cpmRecomendado = (costoSpotTradicional / multiplicador) * 1000;
   const tieneCpm = i.cpmEvaluar != null && i.cpmEvaluar > 0;

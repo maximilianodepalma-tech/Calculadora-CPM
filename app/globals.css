@@ -84,6 +84,8 @@ input::placeholder { color: #a8afbf; }
 .aud { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
 .seg { display: inline-flex; background: var(--field); border: 1px solid var(--line); border-radius: 10px; padding: 3px; }
 .seg button { border: 0; background: transparent; padding: 0 12px; border-radius: 7px; font-size: 13px; color: var(--muted); cursor: pointer; }
+.seg-full { display: flex; height: 42px; margin-bottom: 4px; }
+.seg-full button { flex: 1; }
 .seg button.on { background: var(--la-blue); color: #fff; font-weight: 400; }
 @media (max-width: 420px) { .aud { grid-template-columns: 1fr; } .seg { height: 42px; } .seg button { flex: 1; } }
 

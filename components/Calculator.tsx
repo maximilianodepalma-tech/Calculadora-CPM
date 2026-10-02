@@ -16,6 +16,7 @@ type Result = {
   cpmRecomendado: number;
   costoSpotPdooh: number | null;
   diferencia: number | null;
+  tipoAudiencia?: "pantalla" | "anunciante";
 };
 type Lead = { nombre: string; empresa: string; email: string };
 
@@ -54,6 +55,7 @@ export default function Calculator({ countries, requireLead }: { countries: Coun
   const [horas, setHoras] = useState("");
   const [audiencia, setAudiencia] = useState("");
   const [periodo, setPeriodo] = useState<"mensual" | "semanal">("mensual");
+  const [tipoAud, setTipoAud] = useState<"pantalla" | "anunciante">("pantalla");
   const [cpm, setCpm] = useState("");
 
   const [lead, setLead] = useState<Lead | null>(null);
@@ -85,6 +87,7 @@ export default function Calculator({ countries, requireLead }: { countries: Coun
           horas,
           audiencia,
           periodoAudiencia: periodo,
+          tipoAudiencia: tipoAud,
           cpmEvaluar: cpm ? cpm.replace(",", ".") : "",
           lead: withLead ?? undefined,
         }),
@@ -95,7 +98,7 @@ export default function Calculator({ countries, requireLead }: { countries: Coun
         return;
       }
       if (!res.ok) throw new Error(data.error || "No pudimos calcular. Intenta nuevamente.");
-      setResult(data as Result);
+      setResult({ ...(data as Result), tipoAudiencia: tipoAud });
       if (typeof window !== "undefined" && window.innerWidth < 900) {
         requestAnimationFrame(() => document.getElementById("resultado")?.scrollIntoView({ behavior: "smooth" }));
       }
@@ -220,7 +223,21 @@ export default function Calculator({ countries, requireLead }: { countries: Coun
         </div>
 
         <div className="field">
-          <label htmlFor="audiencia">Audiencia total de la pantalla</label>
+          <label htmlFor="audiencia">Audiencia de la pantalla</label>
+          <div className="seg seg-full" role="radiogroup" aria-label="Tipo de audiencia">
+            {(["pantalla", "anunciante"] as const).map((t) => (
+              <button
+                type="button"
+                key={t}
+                role="radio"
+                aria-checked={tipoAud === t}
+                className={tipoAud === t ? "on" : ""}
+                onClick={() => setTipoAud(t)}
+              >
+                {t === "pantalla" ? "Total de la pantalla" : "Por anunciante"}
+              </button>
+            ))}
+          </div>
           <div className="aud">
             <input
               id="audiencia"
@@ -244,7 +261,11 @@ export default function Calculator({ countries, requireLead }: { countries: Coun
               ))}
             </div>
           </div>
-          <small>Total de personas que ven la pantalla en el período, sumando todos los slots. Se reparte entre los anunciantes del loop.</small>
+          <small>
+            {tipoAud === "pantalla"
+              ? "Total de personas que ven la pantalla en el período, sumando todos los slots. Se reparte entre los anunciantes del loop."
+              : "Personas que ven el aviso de un anunciante en el período. Se aplica completa a ese anunciante, sin repartir."}
+          </small>
         </div>
 
         <div className="divider" />
@@ -292,7 +313,7 @@ export default function Calculator({ countries, requireLead }: { countries: Coun
               <div className="kpi">
                 <span className="label">Multiplicador</span>
                 <span className="val">{fmt(result.multiplicador, 1)}</span>
-                <span className="sub">personas por spot (audiencia ÷ spots totales)</span>
+                <span className="sub">{result.tipoAudiencia !== "anunciante" ? "personas por spot (audiencia ÷ spots totales)" : "personas por spot (audiencia ÷ spots del anunciante)"}</span>
               </div>
               <div className="kpi">
                 <span className="label">Tarifa en USD</span>

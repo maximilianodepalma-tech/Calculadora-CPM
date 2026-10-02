@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
   const horas = num(body.horas);
   const audiencia = num(body.audiencia);
   const periodoAudiencia = body.periodoAudiencia === "semanal" ? "semanal" : "mensual";
+  const tipoAudiencia = body.tipoAudiencia === "anunciante" ? "anunciante" : "pantalla";
   const cpmRaw = body.cpmEvaluar;
   const cpmEvaluar = cpmRaw === "" || cpmRaw == null ? null : num(cpmRaw);
 
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest) {
 
   const r = calcular({
     tarifaLocal, descuento, duracionSpot, anunciantes, horas, audiencia,
-    periodoAudiencia, cpmEvaluar, tipoCambio: fx.rate,
+    periodoAudiencia, tipoAudiencia, cpmEvaluar, tipoCambio: fx.rate,
   });
 
   const acceso = sesion ? "Clave general" : null;
@@ -78,7 +79,9 @@ export async function POST(req: NextRequest) {
     acceso,
     nombre, empresa, email, telefono, cargo,
     pais: country.name, moneda: country.currency,
-    tarifaLocal, descuento, duracionSpot, anunciantes, horas, audiencia, periodoAudiencia, cpmEvaluar,
+    tarifaLocal, descuento, duracionSpot, anunciantes, horas, audiencia, periodoAudiencia,
+    tipoAudiencia: tipoAudiencia === "anunciante" ? "por anunciante" : "total pantalla",
+    cpmEvaluar,
     tipoCambio: fx.rate, origenTipoCambio: fx.source,
     cpmRecomendadoUsd: Number(r.cpmRecomendado.toFixed(2)),
     multiplicador: Number(r.multiplicador.toFixed(2)),

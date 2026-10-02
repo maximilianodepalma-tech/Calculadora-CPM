@@ -28,4 +28,15 @@ close(calcular({ ...base, anunciantes: 12 }).cpmRecomendado, r.cpmRecomendado * 
 // Duración y horas no cambian el CPM (solo cuántos spots recibe el anunciante)
 close(calcular({ ...base, duracionSpot: 30, horas: 12 }).cpmRecomendado, r.cpmRecomendado);
 
-console.log("OK: modelo con audiencia total de la pantalla");
+// Audiencia por anunciante: se aplica completa (sin dividir por anunciantes)
+const a = calcular({ ...base, tipoAudiencia: "anunciante" });
+close(a.cpmRecomendado, (neta / 162_000) * 1000);   // 6,6581 USD
+close(a.cpmRecomendado, r.cpmRecomendado / 6);
+close(a.multiplicador, 162_000 / 32_400);            // 5 personas por spot del anunciante
+close(a.diferencia!, 8 / a.cpmRecomendado - 1);
+// 27.000 por anunciante equivale a 162.000 total con 6 anunciantes
+close(calcular({ ...base, tipoAudiencia: "anunciante", audiencia: 27_000 }).cpmRecomendado, r.cpmRecomendado);
+// Con audiencia por anunciante, la cantidad de anunciantes no cambia el CPM
+close(calcular({ ...base, tipoAudiencia: "anunciante", anunciantes: 12 }).cpmRecomendado, a.cpmRecomendado);
+
+console.log("OK: modelo con audiencia total de la pantalla y por anunciante");
